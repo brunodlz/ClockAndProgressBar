@@ -8,8 +8,11 @@
 
 #import "ViewController.h"
 
-#define CARACTER                @"."
-#define NUMERIC                 @"1234567890"
+int hour = 0;
+int minute = 0;
+
+float halfTime = 0;
+float rest = 0;
 
 int countTimer = 0;
 static double timerInterval = 1.0f;
@@ -22,7 +25,7 @@ static double timerInterval = 1.0f;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.outletPeriod.delegate = self;
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -33,28 +36,28 @@ static double timerInterval = 1.0f;
 
 -(void)initWithTimer
 {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(updateProgress) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(update) userInfo:nil repeats:YES];
 }
 
 - (IBAction)actionStart:(id)sender {
     
-    if ([self validateHour]) {
-        [self.outletStart setAlpha:0.5];
-        [self.outletStart setEnabled:NO];
-        [self.outletPeriod setEnabled:NO];
-        
-        [self initWithTimer];
-    }
+    [self.outletStart setAlpha:0.5];
+    [self.outletStart setEnabled:NO];
+    
+    [self getDate];
+    
+    [self calculateProgress];
+    
+    [self initWithTimer];
     
 }
 
--(void)updateProgress
+-(void)update
 {
     countTimer++;
-    NSString *strTimer = [self formatDuration:countTimer];
-    self.outletTimeLeft.text = strTimer;
+//    NSString *strTimer = [self formatDuration:countTimer];
     
-    [self calculateProgress];
+    [self progress];
 }
 
 - (IBAction)actionStop:(id)sender {
@@ -84,38 +87,68 @@ static double timerInterval = 1.0f;
 
 -(void)calculateProgress
 {
-    float minute = 5;
-    
-    float metadeMinuto = ( minute / 2 ) * 60;
-    
-    float restante = ( minute * ( 90.0 / 100.0 ) ) * 60;
-    
-    if (countTimer >= restante)
+    if (hour != 0 && minute != 0)
+    {
+        halfTime = ( (hour * 3600) / 2 ) + ( ( minute / 2 ) * 60);
+        
+        rest = ( ( hour * ( 90.0 / 100.0 ) ) * 3600 ) + ( ( minute * ( 90.0 / 100.0 ) ) * 60 );
+    }
+    else if (hour != 0)
+    {
+        halfTime = (hour * 3600) / 2;
+        
+        rest = ( hour * ( 90.0 / 100.0 ) ) * 3600;
+    }
+    else
+    {
+        halfTime = ( minute / 2 ) * 60;
+        
+        rest = ( minute * ( 90.0 / 100.0 ) ) * 60;
+    }
+}
+
+-(void)validateProgress
+{
+    if (countTimer >= rest)
     {
         self.outletProgress.tintColor = [UIColor redColor];
     }
-    else if (countTimer >= metadeMinuto && metadeMinuto < restante)
+    else if (countTimer >= halfTime && halfTime < rest)
     {
         self.outletProgress.tintColor = [UIColor orangeColor];
     }
  
-    //update progress
-    float fullTime = minute * 60;
+    [self updateProgress];
+}
+
+-(void)updateProgress
+{
+    float fullTime = ( minute * 60 ) + ( hour * 3600 );
     float step = 1.0/countTimer;
     float differenceOfTime = fullTime - countTimer;
     
     float currentTime = ((fullTime - differenceOfTime) + step)/fullTime;
     self.outletProgress.progress = currentTime;
-    
 }
 
--(BOOL)validateHour{
-    NSString *hourRegex = @"([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]";
-    NSPredicate *hourTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", hourRegex];
+-(void)progress
+{
+    [self validateProgress];
+    [self updateProgress];
+}
+
+-(void)getDate
+{
+    NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+    [outputFormatter setDateFormat:@"HH"];
+    NSString *hourString = [outputFormatter stringFromDate:self.outletDatePicker.date];
     
-    BOOL teste = [hourTest evaluateWithObject:self.outletPeriod.text];
+    hour = [hourString intValue];
     
-    return teste;
+    [outputFormatter setDateFormat:@"mm"];
+    NSString *minuteString = [outputFormatter stringFromDate:self.outletDatePicker.date];
+    
+    minute = [minuteString intValue];
 }
 
 @end

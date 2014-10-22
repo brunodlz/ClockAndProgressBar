@@ -412,6 +412,7 @@
 				1599F50719F5D246000E5734 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1599F50819F5D246000E5734 /* Build configuration list for PBXNativeTarget "ClockAndProgressBarTests" */ = {
 			isa = XCConfigurationList;
@@ -420,6 +421,7 @@
 				1599F50A19F5D246000E5734 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

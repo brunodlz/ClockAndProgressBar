@@ -17,8 +17,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *outletStop;
 @property (weak, nonatomic) IBOutlet UIButton *outletContinue;
 @property (weak, nonatomic) IBOutlet UIProgressView *outletProgress;
-@property (weak, nonatomic) IBOutlet UITextField *outletPeriod;
-@property (weak, nonatomic) IBOutlet UILabel *outletTimeLeft;
+@property (weak, nonatomic) IBOutlet UIDatePicker *outletDatePicker;
+
 
 - (IBAction)actionStart:(id)sender;
 - (IBAction)actionStop:(id)sender;
